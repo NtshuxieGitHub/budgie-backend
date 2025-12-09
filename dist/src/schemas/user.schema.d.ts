@@ -1,40 +1,15 @@
 import { HydratedDocument } from 'mongoose';
 export type UserDocument = HydratedDocument<User>;
 export declare class User {
-    name: {
-        type: string;
-        required: true;
-        minLength: 3;
-        maxLength: 20;
-    };
-    surname: {
-        type: string;
-        required: true;
-        minLength: 3;
-        maxLength: 20;
-    };
-    username: {
-        type: string;
-        required: true;
-        minLength: 3;
-        maxLength: 20;
-    };
-    email: {
-        type: string;
-        required: true;
-        unique: true;
-    };
-    password: {
-        type: string;
-        required: true;
-        minLength: 6;
-        maxLength: 50;
-    };
-    verified: {
-        type: boolean;
-        required: true;
-        default: false;
-    };
+    name: string;
+    surname: string;
+    username: string;
+    email: string;
+    password: string;
+    verificationCode: string | null;
+    verificationExpires: Date | null;
+    verified: boolean;
+    deletedAt: Date | null;
 }
 export declare const UserSchema: import("mongoose").Schema<User, import("mongoose").Model<User, any, any, any, import("mongoose").Document<unknown, any, User, any, {}> & User & {
     _id: import("mongoose").Types.ObjectId;

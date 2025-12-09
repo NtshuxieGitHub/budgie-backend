@@ -1,3 +1,0 @@
-// Loan Details
-
-// Loan Payments

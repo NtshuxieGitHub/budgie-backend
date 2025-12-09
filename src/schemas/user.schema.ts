@@ -5,23 +5,32 @@ export type UserDocument = HydratedDocument<User>;
 
 @Schema({ timestamps: true })
 export class User {
-  @Prop()
-  name: { type: string; required: true; minLength: 3; maxLength: 20 };
+  @Prop({ type: String, required: true, minLength: 3, maxLength: 20 })
+  name: string;
 
-  @Prop()
-  surname: { type: string; required: true; minLength: 3; maxLength: 20 };
+  @Prop({ type: String, required: true, minLength: 3, maxLength: 20 })
+  surname: string;
 
-  @Prop()
-  username: { type: string; required: true; minLength: 3; maxLength: 20 };
+  @Prop({ type: String, required: true, minLength: 3, maxLength: 20 })
+  username: string;
 
-  @Prop()
-  email: { type: string; required: true; unique: true };
+  @Prop({ type: String, required: true, unique: true })
+  email: string;
 
-  @Prop()
-  password: { type: string; required: true; minLength: 6; maxLength: 50 };
+  @Prop({ type: String, required: true, minLength: 8, maxLength: 50 })
+  password: string;
 
-  @Prop()
-  verified: { type: boolean; required: true; default: false };
+  @Prop({ type: String, minLength: 6, maxLength: 6, default: null })
+  verificationCode: string | null;
+
+  @Prop({ type: Date, default: null })
+  verificationExpires: Date | null;
+
+  @Prop({ type: Boolean, required: true, default: false })
+  verified: boolean;
+
+  @Prop({ type: Date, default: null })
+  deletedAt: Date | null;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

@@ -17,33 +17,48 @@ let User = class User {
     username;
     email;
     password;
+    verificationCode;
+    verificationExpires;
     verified;
+    deletedAt;
 };
 exports.User = User;
 __decorate([
-    (0, mongoose_1.Prop)(),
-    __metadata("design:type", Object)
+    (0, mongoose_1.Prop)({ type: String, required: true, minLength: 3, maxLength: 20 }),
+    __metadata("design:type", String)
 ], User.prototype, "name", void 0);
 __decorate([
-    (0, mongoose_1.Prop)(),
-    __metadata("design:type", Object)
+    (0, mongoose_1.Prop)({ type: String, required: true, minLength: 3, maxLength: 20 }),
+    __metadata("design:type", String)
 ], User.prototype, "surname", void 0);
 __decorate([
-    (0, mongoose_1.Prop)(),
-    __metadata("design:type", Object)
+    (0, mongoose_1.Prop)({ type: String, required: true, minLength: 3, maxLength: 20 }),
+    __metadata("design:type", String)
 ], User.prototype, "username", void 0);
 __decorate([
-    (0, mongoose_1.Prop)(),
-    __metadata("design:type", Object)
+    (0, mongoose_1.Prop)({ type: String, required: true, unique: true }),
+    __metadata("design:type", String)
 ], User.prototype, "email", void 0);
 __decorate([
-    (0, mongoose_1.Prop)(),
-    __metadata("design:type", Object)
+    (0, mongoose_1.Prop)({ type: String, required: true, minLength: 8, maxLength: 50 }),
+    __metadata("design:type", String)
 ], User.prototype, "password", void 0);
 __decorate([
-    (0, mongoose_1.Prop)(),
+    (0, mongoose_1.Prop)({ type: String, minLength: 6, maxLength: 6, default: null }),
     __metadata("design:type", Object)
+], User.prototype, "verificationCode", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ type: Date, default: null }),
+    __metadata("design:type", Object)
+], User.prototype, "verificationExpires", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ type: Boolean, required: true, default: false }),
+    __metadata("design:type", Boolean)
 ], User.prototype, "verified", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ type: Date, default: null }),
+    __metadata("design:type", Object)
+], User.prototype, "deletedAt", void 0);
 exports.User = User = __decorate([
     (0, mongoose_1.Schema)({ timestamps: true })
 ], User);
