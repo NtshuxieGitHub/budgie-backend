@@ -5,7 +5,7 @@ import { UserController } from './users.controller';
 import { UserActivities } from 'src/temporal/activities/users.activities';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
-import ENV from 'src/config/config';
+import ENV from '../../config/config';
 import * as path from 'path';
 import { JwtModule } from '@nestjs/jwt';
 

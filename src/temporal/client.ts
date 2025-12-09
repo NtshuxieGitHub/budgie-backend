@@ -1,14 +1,12 @@
-import { Client, Connection } from '@temporalio/client';
+import { Client } from '@temporalio/client';
+import ENV from 'src/config/config';
 
-const client: Client = makeClient();
-
-function makeClient(): Client {
-  const connection = Connection.lazy({
-    address: 'localhost:7233',
-  });
-  return new Client({ connection });
-}
-
-export function getTemporalClient(): Client {
-  return client;
+let temporalClient: Client;
+export function getTemporalClient() {
+  if (!temporalClient) {
+    temporalClient = new Client({
+      namespace: ENV.namespace,
+    });
+  }
+  return temporalClient;
 }

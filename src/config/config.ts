@@ -9,6 +9,8 @@ const ENV = {
   email_port: process.env.EMAIL_PORT,
   jwt_secret: process.env.JWT_SECRET,
   task_queue_name: process.env.TASK_NAME!,
+  namespace: process.env.NAMESPACE,
+  temporal_client: process.env.TEMPORAL_CLIENT!,
 };
 
 export default ENV;

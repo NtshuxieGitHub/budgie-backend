@@ -1,6 +1,6 @@
 import { NativeConnection, Worker } from '@temporalio/worker';
 import * as activities from './activities/users.activities';
-import ENV from 'src/config/config';
+import ENV from '../config/config';
 
 run().catch((err) => console.log(err));
 

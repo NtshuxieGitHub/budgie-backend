@@ -7,6 +7,7 @@ import {
   IsDate,
   IsOptional,
 } from 'class-validator';
+import { UserDocument } from 'src/schemas/user.schema';
 
 export class SignUpDTO {
   @IsString()
@@ -51,7 +52,6 @@ export class SignUpDTO {
 export class UserVerificationDTO {
   email: string;
   code: string;
-  workflowId: string;
 }
 
 export class SignInDTO {
@@ -61,4 +61,28 @@ export class SignInDTO {
 
 export class userIdDTO {
   id: string;
+}
+
+export class signUpWorkflowDTO {
+  success: boolean;
+  message: string;
+  data: UserDocument;
+}
+
+export class accountVerificationWorkflowDTO {
+  success: boolean;
+  message: string;
+  verificationCode: string;
+}
+
+export class userAccountDeletionWorkflowDTO {
+  success: true;
+  message: string;
+}
+
+export class userSignInWorkflowDTO {
+  success: boolean;
+  message: string;
+  token: string;
+  data: UserDocument;
 }
