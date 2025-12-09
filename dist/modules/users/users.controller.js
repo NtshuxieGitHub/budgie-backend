@@ -14,6 +14,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+var UserController_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserController = void 0;
 const common_1 = require("@nestjs/common");
@@ -24,11 +25,16 @@ const account_deletion_workflow_1 = require("../../temporal/workflows/users/acco
 const sign_in_workflow_1 = require("../../temporal/workflows/users/sign_in.workflow");
 const client_1 = require("../../temporal/client");
 const account_verification_workflow_1 = require("../../temporal/workflows/users/account_verification.workflow");
-let UserController = class UserController {
+const common_2 = require("@nestjs/common");
+let UserController = UserController_1 = class UserController {
     client = (0, client_1.getTemporalClient)();
+    logger = new common_2.Logger(UserController_1.name, {
+        timestamp: true,
+    });
     async signUp(user) {
-        const workflowId = `${user.email}_${Date.now()}`;
         try {
+            const workflowId = `${user.email}_${Date.now()}`;
+            this.logger.log('Workflow Id: ', workflowId);
             const handle = await this.client.workflow.start(user_sign_up_workflow_1.userSignUpWorkflow, {
                 taskQueue: config_1.default.task_queue_name,
                 workflowId: workflowId,
@@ -41,6 +47,7 @@ let UserController = class UserController {
             };
         }
         catch (error) {
+            this.logger.log('Failed to sign in: ', error);
             throw new common_1.HttpException({
                 status: common_1.HttpStatus.INTERNAL_SERVER_ERROR,
                 error: 'Failed to sign up.',
@@ -138,7 +145,7 @@ __decorate([
     __metadata("design:paramtypes", [users_dto_1.userIdDTO]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "delete", null);
-exports.UserController = UserController = __decorate([
+exports.UserController = UserController = UserController_1 = __decorate([
     (0, common_1.Controller)('users')
 ], UserController);
 //# sourceMappingURL=users.controller.js.map

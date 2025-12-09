@@ -14,25 +14,39 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+var UserActivities_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserActivities = void 0;
-exports.initializeUserActivities = initializeUserActivities;
-exports.createUser = createUser;
-exports.sendVerificationEmail = sendVerificationEmail;
-exports.verifyUserEmail = verifyUserEmail;
-exports.signUserIn = signUserIn;
-exports.deleteUserAccount = deleteUserAccount;
 const common_1 = require("@nestjs/common");
 const mongoose_1 = require("@nestjs/mongoose");
-const mongoose_2 = __importDefault(require("mongoose"));
+const mongoose_2 = require("mongoose");
+const mongoose_3 = require("mongoose");
 const user_schema_1 = require("../../schemas/user.schema");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const mailer_1 = require("@nestjs-modules/mailer");
 const jwt_1 = require("@nestjs/jwt");
-let UserActivities = class UserActivities {
+const common_2 = require("@nestjs/common");
+const config_1 = __importDefault(require("../../config/config"));
+const { email_host, email_port, email_username, email_password } = config_1.default;
+const mailOpts = {
+    host: email_host,
+    port: Number(email_port),
+    username: email_username,
+    password: email_password,
+};
+const logger = new common_2.Logger('UserActivities', {
+    timestamp: true,
+});
+const userModel = (0, mongoose_2.model)('User');
+const mailerService = new mailer_1.MailerService(mailOpts);
+const jwtService = new jwt_1.JwtService();
+let UserActivities = UserActivities_1 = class UserActivities {
     userModel;
     mailService;
     jwtService;
+    logger = new common_2.Logger(UserActivities_1.name, {
+        timestamp: true,
+    });
     constructor(userModel, mailService, jwtService) {
         this.userModel = userModel;
         this.mailService = mailService;
@@ -46,7 +60,7 @@ let UserActivities = class UserActivities {
             return await newUser.save();
         }
         catch (error) {
-            console.log('Failed to create new user ', error);
+            this.logger.log('Failed to create new user ', error);
             throw new Error('Failed to create new user');
         }
     }
@@ -65,7 +79,7 @@ let UserActivities = class UserActivities {
             });
         }
         catch (error) {
-            console.log('Failed to send user verification email', error);
+            this.logger.log('Failed to send user verification email', error);
             throw new Error('Failed to send user verification email');
         }
     }
@@ -89,7 +103,7 @@ let UserActivities = class UserActivities {
             await user.save();
         }
         catch (error) {
-            console.log('Error verifying user email account', error);
+            this.logger.log('Error verifying user email account', error);
             throw new Error('Error verifying user email account');
         }
     }
@@ -118,7 +132,7 @@ let UserActivities = class UserActivities {
             };
         }
         catch (error) {
-            console.log('Failed to sign user in', error);
+            this.logger.log('Failed to sign user in', error);
             throw new Error('Failed to sign user in');
         }
     }
@@ -131,7 +145,7 @@ let UserActivities = class UserActivities {
             await deletionResult.save();
         }
         catch (error) {
-            console.log('Failed to delete user account', error);
+            this.logger.log('Failed to delete user account', error);
             throw new Error('Failed to delete user account');
         }
     }
@@ -140,29 +154,11 @@ let UserActivities = class UserActivities {
     }
 };
 exports.UserActivities = UserActivities;
-exports.UserActivities = UserActivities = __decorate([
+exports.UserActivities = UserActivities = UserActivities_1 = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, mongoose_1.InjectModel)(user_schema_1.User.name)),
-    __metadata("design:paramtypes", [mongoose_2.default.Model, mailer_1.MailerService,
+    __metadata("design:paramtypes", [mongoose_3.Model,
+        mailer_1.MailerService,
         jwt_1.JwtService])
 ], UserActivities);
-let activitiesInstance;
-function initializeUserActivities(userModel, mailerService, jwtService) {
-    activitiesInstance = new UserActivities(userModel, mailerService, jwtService);
-}
-async function createUser(user) {
-    return activitiesInstance.createUser(user);
-}
-async function sendVerificationEmail(user) {
-    return activitiesInstance.sendVerificationEmail(user);
-}
-async function verifyUserEmail(data) {
-    return activitiesInstance.verifyUserEmail(data);
-}
-async function signUserIn(userSignInDetails) {
-    return activitiesInstance.signUserIn(userSignInDetails);
-}
-async function deleteUserAccount(userId) {
-    return activitiesInstance.deleteUserAccount(userId);
-}
 //# sourceMappingURL=users.activities.js.map

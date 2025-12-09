@@ -4,9 +4,10 @@ import {
   userAccountDeletionWorkflowDTO,
   userIdDTO,
 } from 'src/modules/users/users_dto';
+import { UserActivities } from '../../activities/users.activities';
 
 const { deleteUserAccount } = proxyActivities<typeof activities>({
-  startToCloseTimeout: '3 seconds',
+  startToCloseTimeout: '3 seconds',``
   retry: {
     initialInterval: '1 second',
     maximumAttempts: 3,

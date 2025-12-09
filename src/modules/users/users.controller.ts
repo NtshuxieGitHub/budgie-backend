@@ -19,17 +19,23 @@ import { userAccountDeletionWorkflow } from 'src/temporal/workflows/users/accoun
 import { userSignInWorkflow } from 'src/temporal/workflows/users/sign_in.workflow';
 import { getTemporalClient } from 'src/temporal/client';
 import { accountVerificationWorkflow } from 'src/temporal/workflows/users/account_verification.workflow';
+import { Logger } from '@nestjs/common';
 
 @Controller('users')
 export class UserController {
   private client = getTemporalClient();
+  private readonly logger = new Logger(UserController.name, {
+    timestamp: true,
+  });
 
   @Post('sign-up')
   async signUp(
     @Body() user: SignUpDTO,
   ): Promise<{ success: string; message: string; workflowId: string }> {
-    const workflowId = `${user.email}_${Date.now()}`;
     try {
+      const workflowId = `${user.email}_${Date.now()}`;
+      this.logger.log('Workflow Id: ', workflowId);
+
       const handle = await this.client.workflow.start(userSignUpWorkflow, {
         taskQueue: ENV.task_queue_name,
         workflowId: workflowId,
@@ -43,6 +49,7 @@ export class UserController {
         workflowId: handle.workflowId,
       };
     } catch (error) {
+      this.logger.log('Failed to sign in: ', error);
       throw new HttpException(
         {
           status: HttpStatus.INTERNAL_SERVER_ERROR,

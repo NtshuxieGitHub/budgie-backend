@@ -39,7 +39,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const worker_1 = require("@temporalio/worker");
 const activities = __importStar(require("./activities/users.activities"));
 const config_1 = __importDefault(require("../config/config"));
-run().catch((err) => console.log(err));
+const common_1 = require("@nestjs/common");
+const logger = new common_1.Logger('Worker', { timestamp: true });
+run().catch((err) => logger.log('Error running Temporal Worker: ', err));
 async function run() {
     const connection = await worker_1.NativeConnection.connect({
         address: 'localhost:7233',
@@ -47,7 +49,7 @@ async function run() {
     try {
         const worker = await worker_1.Worker.create({
             connection,
-            workflowsPath: require.resolve('./workflows/users/user_sign_up.workflow.ts'),
+            workflowsPath: require.resolve('./workflows/users/index.ts'),
             activities,
             taskQueue: config_1.default.task_queue_name,
         });

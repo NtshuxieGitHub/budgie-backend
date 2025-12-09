@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import mongoose from 'mongoose';
+import mongoose, { model } from 'mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from '../../schemas/user.schema';
 import {
@@ -12,12 +12,41 @@ import {
 import bcrypt from 'bcrypt';
 import { MailerService } from '@nestjs-modules/mailer';
 import { JwtService } from '@nestjs/jwt';
+import { Logger } from '@nestjs/common';
+import ENV from 'src/config/config';
+
+interface MailerOpts {
+  host: string;
+  port: number;
+  username: string;
+  password: string;
+}
+
+const { email_host, email_port, email_username, email_password } = ENV;
+const mailOpts: MailerOpts = {
+  host: email_host,
+  port: Number(email_port),
+  username: email_username,
+  password: email_password,
+};
+
+const logger = new Logger('UserActivities', {
+  timestamp: true,
+});
+
+const userModel: Model<UserDocument> = model<UserDocument>('User');
+const mailerService = new MailerService(mailOpts);
+const jwtService = new JwtService();
 
 @Injectable()
 export class UserActivities {
+  private readonly logger = new Logger(UserActivities.name, {
+    timestamp: true,
+  });
+
   constructor(
     @InjectModel(User.name)
-    private userModel: mongoose.Model<UserDocument>,
+    private userModel: Model<UserDocument>,
     private mailService: MailerService,
     private jwtService: JwtService,
   ) {}
@@ -29,7 +58,7 @@ export class UserActivities {
       const newUser = new this.userModel(user);
       return await newUser.save();
     } catch (error) {
-      console.log('Failed to create new user ', error);
+      this.logger.log('Failed to create new user ', error);
       throw new Error('Failed to create new user');
     }
   }
@@ -50,7 +79,7 @@ export class UserActivities {
         context: { code: user.verificationCode },
       });
     } catch (error) {
-      console.log('Failed to send user verification email', error);
+      this.logger.log('Failed to send user verification email', error);
       throw new Error('Failed to send user verification email');
     }
   }
@@ -76,7 +105,7 @@ export class UserActivities {
       user.verificationExpires = null;
       await user.save();
     } catch (error) {
-      console.log('Error verifying user email account', error);
+      this.logger.log('Error verifying user email account', error);
       throw new Error('Error verifying user email account');
     }
   }
@@ -110,7 +139,7 @@ export class UserActivities {
         data: user,
       };
     } catch (error) {
-      console.log('Failed to sign user in', error);
+      this.logger.log('Failed to sign user in', error);
       throw new Error('Failed to sign user in');
     }
   }
@@ -123,7 +152,7 @@ export class UserActivities {
       deletionResult.deletedAt = new Date();
       await deletionResult.save();
     } catch (error) {
-      console.log('Failed to delete user account', error);
+      this.logger.log('Failed to delete user account', error);
       throw new Error('Failed to delete user account');
     }
   }
@@ -133,34 +162,4 @@ export class UserActivities {
   private generateRandomCode(): string {
     return Math.floor(100000 + Math.random() * 900000).toString();
   }
-}
-
-let activitiesInstance: UserActivities;
-
-export function initializeUserActivities(
-  userModel: Model<UserDocument>,
-  mailerService: MailerService,
-  jwtService: JwtService,
-) {
-  activitiesInstance = new UserActivities(userModel, mailerService, jwtService);
-}
-
-export async function createUser(user: SignUpDTO) {
-  return activitiesInstance.createUser(user);
-}
-
-export async function sendVerificationEmail(user: UserDocument) {
-  return activitiesInstance.sendVerificationEmail(user);
-}
-
-export async function verifyUserEmail(data: UserVerificationDTO) {
-  return activitiesInstance.verifyUserEmail(data);
-}
-
-export async function signUserIn(userSignInDetails: SignInDTO) {
-  return activitiesInstance.signUserIn(userSignInDetails);
-}
-
-export async function deleteUserAccount(userId: userIdDTO) {
-  return activitiesInstance.deleteUserAccount(userId);
 }

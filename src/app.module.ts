@@ -1,15 +1,20 @@
-import { Module } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import ENV from 'src/config/config';
 import { Connection } from 'mongoose';
+import { UsersModule } from './modules/users/users.module';
+
+const logger = new Logger();
 
 @Module({
   imports: [
+    UsersModule,
     MongooseModule.forRoot(ENV.db_uri, {
       onConnectionCreate: (connection: Connection) => {
-        connection.on('connected', () => console.log('Connected to Budgie DB'));
+        const logger = AppModule.logger;
+        connection.once('open', () => logger.log('Connected to Budgie DB'));
 
         return connection;
       },
@@ -18,4 +23,9 @@ import { Connection } from 'mongoose';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+  static readonly logger = new Logger(AppModule.name, { timestamp: true });
+  constructor() {
+    AppModule.logger.log(`Budgie Server is up and running on port:${ENV.port}`);
+  }
+}

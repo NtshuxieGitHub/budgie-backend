@@ -3,6 +3,7 @@ import { userAccountDeletionWorkflow } from 'src/temporal/workflows/users/accoun
 import { userSignInWorkflow } from 'src/temporal/workflows/users/sign_in.workflow';
 export declare class UserController {
     private client;
+    private readonly logger;
     signUp(user: SignUpDTO): Promise<{
         success: string;
         message: string;

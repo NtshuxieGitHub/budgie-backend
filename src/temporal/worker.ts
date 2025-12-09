@@ -1,8 +1,10 @@
 import { NativeConnection, Worker } from '@temporalio/worker';
 import * as activities from './activities/users.activities';
 import ENV from '../config/config';
+import { Logger } from '@nestjs/common';
 
-run().catch((err) => console.log(err));
+const logger = new Logger('Worker', { timestamp: true });
+run().catch((err) => logger.log('Error running Temporal Worker: ', err));
 
 async function run() {
   const connection = await NativeConnection.connect({
@@ -11,8 +13,7 @@ async function run() {
   try {
     const worker = await Worker.create({
       connection,
-      workflowsPath:
-        require.resolve('./workflows/users/user_sign_up.workflow.ts'),
+      workflowsPath: require.resolve('./workflows/users/index.ts'),
       activities,
       taskQueue: ENV.task_queue_name,
     });
