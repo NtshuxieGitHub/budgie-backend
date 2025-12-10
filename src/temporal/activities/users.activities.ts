@@ -9,7 +9,7 @@ import {
 import bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { Logger } from '@nestjs/common';
-import ENV from 'src/config/config';
+import ENV from '../../config/config';
 import nodemailer from 'nodemailer';
 
 const logger = new Logger('UserActivities');

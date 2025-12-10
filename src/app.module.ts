@@ -2,7 +2,7 @@ import { Logger, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import ENV from 'src/config/config';
+import ENV from './config/config';
 import { Connection } from 'mongoose';
 import { UsersModule } from './modules/users/users.module';
 

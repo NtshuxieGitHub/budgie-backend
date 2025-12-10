@@ -1,5 +1,5 @@
 import { Client } from '@temporalio/client';
-import ENV from 'src/config/config';
+import ENV from '../config/config';
 
 let temporalClient: Client;
 export function getTemporalClient() {
