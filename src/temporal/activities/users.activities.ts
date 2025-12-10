@@ -1,5 +1,4 @@
-import { model } from 'mongoose';
-import { User, UserDocument } from '../../schemas/user.schema';
+import { UserDocument } from '../../schemas/user.schema';
 import {
   SignInDTO,
   SignUpDTO,
@@ -11,10 +10,11 @@ import { JwtService } from '@nestjs/jwt';
 import { Logger } from '@nestjs/common';
 import ENV from '../../config/config';
 import nodemailer from 'nodemailer';
+import { generateRandomCode, getUserModel } from '../lib/helpers';
 
 const logger = new Logger('UserActivities');
-const userModel = model<UserDocument>(User.name);
 const jwtService = new JwtService();
+const userModel = getUserModel();
 
 export async function createUser(user: SignUpDTO): Promise<UserDocument> {
   try {
@@ -121,11 +121,7 @@ export async function deleteUserAccount(userId: userIdDTO): Promise<void> {
   }
 }
 
-function generateRandomCode(): string {
-  return Math.floor(100000 + Math.random() * 900000).toString();
-}
-
-export const mailTransporter = nodemailer.createTransport({
+const mailTransporter = nodemailer.createTransport({
   host: ENV.email_host,
   port: Number(ENV.email_port),
   secure: false,

@@ -6,8 +6,6 @@ import ENV from './config/config';
 import { Connection } from 'mongoose';
 import { UsersModule } from './modules/users/users.module';
 
-const logger = new Logger();
-
 @Module({
   imports: [
     UsersModule,
