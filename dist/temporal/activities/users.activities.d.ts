@@ -1,6 +1,6 @@
 import { UserDocument } from '../../schemas/user.schema';
 import { SignInDTO, SignUpDTO, UserVerificationDTO, userIdDTO } from '../../modules/users/users_dto';
-export declare function createUser(user: SignUpDTO): Promise<UserDocument>;
+export declare function createUser(user: SignUpDTO): Promise<void>;
 export declare function sendVerificationEmail(userId: userIdDTO): Promise<UserDocument>;
 export declare function verifyUserEmail(verificationData: UserVerificationDTO): Promise<UserDocument>;
 export declare function signUserIn(userSignInDetails: SignInDTO): Promise<{

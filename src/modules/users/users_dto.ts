@@ -66,8 +66,7 @@ export class userIdDTO {
 export class signUpWorkflowDTO {
   success: boolean;
   message: string;
-  originalUserData?: UserDocument;
-  updatedUserData?: UserDocument;
+  data: UserDocument;
 }
 
 export class accountVerificationWorkflowDTO {

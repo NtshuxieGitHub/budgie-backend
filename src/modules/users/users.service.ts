@@ -8,7 +8,6 @@ import {
   userIdDTO,
 } from './users_dto';
 import { userSignUpWorkflow } from 'src/temporal/workflows/users/user_sign_up.workflow';
-import { accountVerificationWorkflow } from 'src/temporal/workflows/users/account_verification.workflow';
 import { userAccountDeletionWorkflow } from 'src/temporal/workflows/users/account_deletion.workflow';
 import { signUserIn } from 'src/temporal/activities/users.activities';
 
@@ -41,16 +40,19 @@ export class UserService {
 
   async verifyEmail(userVerificationData: UserVerificationDTO) {
     try {
-      const workflowId = `verify:${userVerificationData.email}-${userVerificationData.code}`;
-      await this.client.workflow.start(accountVerificationWorkflow, {
-        taskQueue: ENV.task_queue_name,
-        workflowId,
-        args: [userVerificationData],
-      });
+      const workflowId = `signup:${userVerificationData.email}_${Date.now()}`;
+
+      // Get workflow handle using workflow id
+      const handle = this.client.workflow.getHandle(workflowId);
+
+      /* Send signal to workflow 
+        includes the signal name and payload
+      */
+      await handle.signal('userVerificationCodeReceived', userVerificationData);
 
       return {
         success: 'OK',
-        message: 'Verification in progress.',
+        message: 'Verification in progress...',
         workflowId,
       };
     } catch (error) {

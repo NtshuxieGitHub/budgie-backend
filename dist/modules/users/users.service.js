@@ -15,7 +15,7 @@ const common_1 = require("@nestjs/common");
 const config_1 = __importDefault(require("../../config/config"));
 const client_1 = require("../../temporal/client");
 const user_sign_up_workflow_1 = require("../../temporal/workflows/users/user_sign_up.workflow");
-const account_verification_workflow_1 = require("../../temporal/workflows/users/account_verification.workflow");
+const account_verification_workflow_1 = require("src/temporal/workflows/users/account_verification.workflow");
 const account_deletion_workflow_1 = require("../../temporal/workflows/users/account_deletion.workflow");
 const users_activities_1 = require("../../temporal/activities/users.activities");
 let UserService = UserService_1 = class UserService {

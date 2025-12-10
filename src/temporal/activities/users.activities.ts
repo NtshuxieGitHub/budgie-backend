@@ -1,4 +1,4 @@
-import { UserDocument, User } from '../../schemas/user.schema';
+import { UserDocument } from '../../schemas/user.schema';
 import {
   SignInDTO,
   SignUpDTO,
@@ -17,14 +17,14 @@ const logger = new Logger('UserActivities');
 const jwtService = new JwtService();
 const userModel = getUserModel();
 
-export async function createUser(user: SignUpDTO): Promise<UserDocument> {
+export async function createUser(user: SignUpDTO): Promise<userIdDTO> {
   try {
     const hashedUserPassword = await bcrypt.hash(user.password, 12);
     user.password = hashedUserPassword;
     const newUser = new userModel(user);
-    return await newUser.save();
+    return { id: newUser._id.toString() };
   } catch (error) {
-    logger.error('Failed to create new user ', error.stack || error);
+    logger.error('Failed to create new user ', error);
     throw error;
   }
 }
@@ -65,7 +65,13 @@ export async function verifyUserEmail(
 ): Promise<UserDocument> {
   try {
     const { email, code } = verificationData;
+
     const user = await userModel.findOne({ email });
+
+    if (!user) throw new Error('User not found.');
+
+    if (user.verificationCode !== code)
+      throw new Error('Verification code is invalid or incorrect.');
 
     user.verified = true;
     user.verificationCode = null;
@@ -89,7 +95,7 @@ export async function signUserIn(
 
     if (!user) throw new Error('User email or username is invalid.');
 
-    if (!user.verified) throw new Error('User is unverified.');
+    if (!user.verified) throw new Error('User account is unverified.');
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) throw new Error('User password is invalid.');

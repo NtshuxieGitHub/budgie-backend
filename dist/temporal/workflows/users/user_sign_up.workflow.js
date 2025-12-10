@@ -49,6 +49,12 @@ async function userSignUpWorkflow(user) {
                 continue;
             }
             await verifyUserEmail(userSubmittedInfo);
+            return {
+                success: true,
+                message: 'User signed up successfully, awaiting account verification',
+                originalUserData: newUser,
+                updatedUserData: updatedUser,
+            };
         }
     }
     return {

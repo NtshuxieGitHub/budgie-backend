@@ -23,11 +23,10 @@ async function createUser(user) {
     try {
         const hashedUserPassword = await bcrypt_1.default.hash(user.password, 12);
         user.password = hashedUserPassword;
-        const newUser = new userModel(user);
-        return await newUser.save();
+        const newUser = new userModel(user).save();
     }
     catch (error) {
-        logger.error('Failed to create new user ', error.stack || error);
+        logger.error('Failed to create new user ', error);
         throw error;
     }
 }
@@ -56,15 +55,31 @@ async function verifyUserEmail(verificationData) {
     try {
         const { email, code } = verificationData;
         const user = await userModel.findOne({ email });
-        user.verified = true;
-        user.verificationCode = null;
-        user.verificationExpires = null;
-        return await user.save();
+        if (!user)
+            throw new Error('User not found.');
+        if (!user.verificationCode || !user.verificationExpires)
+            throw new Error();
     }
-    catch (error) {
-        logger.error('Error verifying user email account', error.stack || error);
-        throw error;
+    finally {
     }
+    if (!user.verificationCode || user.verificationCode !== code) {
+        throw new Error('Verification code is invalid or incorrect.');
+    }
+    if (Date.now() > user.verificationExpires?.getTime()) {
+        throw new Error('');
+    }
+    if (!user.verificationExpires || user.verificationExpires < new Date()) {
+        throw new Error('Verification code has expired.');
+    }
+    user.verified = true;
+    user.verificationCode = null;
+    user.verificationExpires = null;
+    return await user.save();
+}
+try { }
+catch (error) {
+    logger.error('Error verifying user email account', error.stack || error);
+    throw error;
 }
 async function signUserIn(userSignInDetails) {
     try {
