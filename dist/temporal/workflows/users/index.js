@@ -16,6 +16,5 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./account_deletion.workflow"), exports);
 __exportStar(require("./account_verification.workflow"), exports);
-__exportStar(require("./sign_in.workflow"), exports);
 __exportStar(require("./user_sign_up.workflow"), exports);
 //# sourceMappingURL=index.js.map

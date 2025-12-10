@@ -23,7 +23,8 @@ export declare class userIdDTO {
 export declare class signUpWorkflowDTO {
     success: boolean;
     message: string;
-    data: UserDocument;
+    originalUserData?: UserDocument;
+    updatedUserData?: UserDocument;
 }
 export declare class accountVerificationWorkflowDTO {
     success: boolean;

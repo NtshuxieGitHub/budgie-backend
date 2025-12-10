@@ -1,8 +1,5 @@
-import { UserVerificationDTO, SignUpDTO, SignInDTO, userIdDTO } from './users_dto';
-import { UserService } from './users.service';
-export declare class UserController {
-    private readonly userService;
-    constructor(userService: UserService);
+import { SignUpDTO, UserVerificationDTO, SignInDTO, userIdDTO } from './users_dto';
+export declare class UserService {
     private client;
     private readonly logger;
     signUp(user: SignUpDTO): Promise<{
@@ -10,7 +7,7 @@ export declare class UserController {
         message: string;
         workflowId: string;
     }>;
-    verifyEmail(verificationData: UserVerificationDTO): Promise<{
+    verifyEmail(userVerificationData: UserVerificationDTO): Promise<{
         success: string;
         message: string;
         workflowId: string;
@@ -19,7 +16,7 @@ export declare class UserController {
         token: string;
         data: import("../../schemas/user.schema").UserDocument;
     }>;
-    delete(userId: userIdDTO): Promise<{
+    deleteAccount(userId: userIdDTO): Promise<{
         success: string;
         message: string;
     }>;

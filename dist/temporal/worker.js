@@ -40,9 +40,11 @@ const worker_1 = require("@temporalio/worker");
 const activities = __importStar(require("./activities/users.activities"));
 const config_1 = __importDefault(require("../config/config"));
 const common_1 = require("@nestjs/common");
+const db_register_1 = require("./db_register");
 const logger = new common_1.Logger('Worker', { timestamp: true });
 run().catch((err) => logger.log('Error running Temporal Worker: ', err));
 async function run() {
+    await (0, db_register_1.dbRegister)();
     const connection = await worker_1.NativeConnection.connect({
         address: 'localhost:7233',
     });

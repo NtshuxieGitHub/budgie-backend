@@ -17,7 +17,7 @@ export class User {
   @Prop({ type: String, required: true, unique: true })
   email: string;
 
-  @Prop({ type: String, required: true, minLength: 8, maxLength: 50 })
+  @Prop({ type: String, required: true, minLength: 8, maxLength: 80 })
   password: string;
 
   @Prop({ type: String, minLength: 6, maxLength: 6, default: null })

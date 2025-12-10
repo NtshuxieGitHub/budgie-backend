@@ -1,4 +1,4 @@
-import { UserDocument } from '../../schemas/user.schema';
+import { UserDocument, User } from '../../schemas/user.schema';
 import {
   SignInDTO,
   SignUpDTO,
@@ -11,6 +11,7 @@ import { Logger } from '@nestjs/common';
 import ENV from '../../config/config';
 import nodemailer from 'nodemailer';
 import { generateRandomCode, getUserModel } from '../lib/helpers';
+import mongoose from 'mongoose';
 
 const logger = new Logger('UserActivities');
 const jwtService = new JwtService();
@@ -23,54 +24,56 @@ export async function createUser(user: SignUpDTO): Promise<UserDocument> {
     const newUser = new userModel(user);
     return await newUser.save();
   } catch (error) {
-    logger.log('Failed to create new user ', error);
-    throw new Error('Failed to create new user');
+    logger.error('Failed to create new user ', error.stack || error);
+    throw error;
   }
 }
 
-export async function sendVerificationEmail(user: UserDocument): Promise<void> {
+export async function sendVerificationEmail(
+  userId: userIdDTO,
+): Promise<UserDocument> {
   try {
     const verificationCode = generateRandomCode();
-    const verificationExpiryDate = new Date(Date.now() + 2 * 60 * 1000);
+    const verificationExpiryDate = new Date(Date.now() + 5 * 60 * 1000);
+
+    const user = await userModel.findById(
+      new mongoose.Types.ObjectId(userId.id),
+    );
+    if (!user) throw new Error('User not found');
 
     user.verificationCode = verificationCode;
     user.verificationExpires = verificationExpiryDate;
-    await user.save();
 
     await mailTransporter.sendMail({
       to: user.email,
       subject: 'Email Verification Required for your Budgie Account',
       html: `<p>Your verification code is <b>${verificationCode}</b></p>`,
     });
+
+    return await user.save();
   } catch (error) {
-    logger.log('Failed to send user verification email', error);
-    throw new Error('Failed to send user verification email');
+    logger.error(
+      'Failed to send user verification email ',
+      error.stack || error,
+    );
+    throw error;
   }
 }
 
-export async function verifyUserEmail(verificationData: UserVerificationDTO) {
+export async function verifyUserEmail(
+  verificationData: UserVerificationDTO,
+): Promise<UserDocument> {
   try {
     const { email, code } = verificationData;
     const user = await userModel.findOne({ email });
-    if (!user) throw new Error('User not found.');
-
-    if (user.verified) return;
-
-    if (!user.verificationCode || user.verificationCode !== code) {
-      throw new Error('Verification code is inavlid or incorrect.');
-    }
-
-    if (!user.verificationExpires || user.verificationExpires < new Date()) {
-      throw new Error('Verification code has expired.');
-    }
 
     user.verified = true;
     user.verificationCode = null;
     user.verificationExpires = null;
-    await user.save();
+    return await user.save();
   } catch (error) {
-    logger.log('Error verifying user email account', error);
-    throw new Error('Error verifying user email account');
+    logger.error('Error verifying user email account', error.stack || error);
+    throw error;
   }
 }
 
@@ -103,8 +106,8 @@ export async function signUserIn(
       data: user,
     };
   } catch (error) {
-    logger.log('Failed to sign user in', error);
-    throw new Error('Failed to sign user in');
+    logger.error('Failed to sign user in', error.stack || error);
+    throw error;
   }
 }
 
@@ -116,9 +119,16 @@ export async function deleteUserAccount(userId: userIdDTO): Promise<void> {
     deletionResult.deletedAt = new Date();
     await deletionResult.save();
   } catch (error) {
-    logger.log('Failed to delete user account', error);
+    logger.error('Failed to delete user account', error.stack || error);
     throw new Error('Failed to delete user account');
   }
+}
+
+export async function getUserById(
+  userId: userIdDTO,
+): Promise<UserDocument | null> {
+  const user = await userModel.findById(new mongoose.Types.ObjectId(userId.id));
+  return user;
 }
 
 const mailTransporter = nodemailer.createTransport({

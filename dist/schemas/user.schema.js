@@ -40,7 +40,7 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "email", void 0);
 __decorate([
-    (0, mongoose_1.Prop)({ type: String, required: true, minLength: 8, maxLength: 50 }),
+    (0, mongoose_1.Prop)({ type: String, required: true, minLength: 8, maxLength: 80 }),
     __metadata("design:type", String)
 ], User.prototype, "password", void 0);
 __decorate([

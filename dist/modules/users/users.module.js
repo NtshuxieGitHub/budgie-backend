@@ -47,12 +47,12 @@ const common_1 = require("@nestjs/common");
 const mongoose_1 = require("@nestjs/mongoose");
 const user_schema_1 = require("../../schemas/user.schema");
 const users_controller_1 = require("./users.controller");
-const users_activities_1 = require("../../temporal/activities/users.activities");
 const mailer_1 = require("@nestjs-modules/mailer");
 const handlebars_adapter_1 = require("@nestjs-modules/mailer/dist/adapters/handlebars.adapter");
 const config_1 = __importDefault(require("../../config/config"));
 const path = __importStar(require("path"));
 const jwt_1 = require("@nestjs/jwt");
+const users_service_1 = require("./users.service");
 let UsersModule = class UsersModule {
 };
 exports.UsersModule = UsersModule;
@@ -82,7 +82,7 @@ exports.UsersModule = UsersModule = __decorate([
             }),
         ],
         controllers: [users_controller_1.UserController],
-        providers: [users_activities_1.UserActivities],
+        providers: [users_service_1.UserService],
     })
 ], UsersModule);
 //# sourceMappingURL=users.module.js.map

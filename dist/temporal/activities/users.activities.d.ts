@@ -1,21 +1,11 @@
-import { Model } from 'mongoose';
 import { UserDocument } from '../../schemas/user.schema';
 import { SignInDTO, SignUpDTO, UserVerificationDTO, userIdDTO } from '../../modules/users/users_dto';
-import { MailerService } from '@nestjs-modules/mailer';
-import { JwtService } from '@nestjs/jwt';
-export declare class UserActivities {
-    private userModel;
-    private mailService;
-    private jwtService;
-    private readonly logger;
-    constructor(userModel: Model<UserDocument>, mailService: MailerService, jwtService: JwtService);
-    createUser(user: SignUpDTO): Promise<UserDocument>;
-    sendVerificationEmail(user: UserDocument): Promise<void>;
-    verifyUserEmail(verificationData: UserVerificationDTO): Promise<void>;
-    signUserIn(userSignInDetails: SignInDTO): Promise<{
-        token: string;
-        data: UserDocument;
-    }>;
-    deleteUserAccount(userId: userIdDTO): Promise<void>;
-    private generateRandomCode;
-}
+export declare function createUser(user: SignUpDTO): Promise<UserDocument>;
+export declare function sendVerificationEmail(userId: userIdDTO): Promise<UserDocument>;
+export declare function verifyUserEmail(verificationData: UserVerificationDTO): Promise<UserDocument>;
+export declare function signUserIn(userSignInDetails: SignInDTO): Promise<{
+    token: string;
+    data: UserDocument;
+}>;
+export declare function deleteUserAccount(userId: userIdDTO): Promise<void>;
+export declare function getUserById(userId: userIdDTO): Promise<UserDocument | null>;

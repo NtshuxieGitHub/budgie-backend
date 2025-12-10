@@ -85,7 +85,8 @@ exports.userIdDTO = userIdDTO;
 class signUpWorkflowDTO {
     success;
     message;
-    data;
+    originalUserData;
+    updatedUserData;
 }
 exports.signUpWorkflowDTO = signUpWorkflowDTO;
 class accountVerificationWorkflowDTO {

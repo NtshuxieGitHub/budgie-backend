@@ -20,7 +20,6 @@ const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
 const config_1 = __importDefault(require("./config/config"));
 const users_module_1 = require("./modules/users/users.module");
-const logger = new common_1.Logger();
 let AppModule = class AppModule {
     static { AppModule_1 = this; }
     static logger = new common_1.Logger(AppModule_1.name, { timestamp: true });
