@@ -2,12 +2,12 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserSchema } from 'src/schemas/user.schema';
 import { UserController } from './users.controller';
-import { UserActivities } from 'src/temporal/activities/users.activities';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import ENV from '../../config/config';
 import * as path from 'path';
 import { JwtModule } from '@nestjs/jwt';
+import { UserService } from './users.service';
 
 @Module({
   imports: [
@@ -34,6 +34,6 @@ import { JwtModule } from '@nestjs/jwt';
     }),
   ],
   controllers: [UserController],
-  providers: [UserActivities],
+  providers: [UserService],
 })
 export class UsersModule {}

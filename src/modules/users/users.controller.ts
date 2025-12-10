@@ -13,16 +13,13 @@ import {
   SignInDTO,
   userIdDTO,
 } from './users_dto';
-import ENV from '../../config/config';
-import { userSignUpWorkflow } from 'src/temporal/workflows/users/user_sign_up.workflow';
-import { userAccountDeletionWorkflow } from 'src/temporal/workflows/users/account_deletion.workflow';
-import { userSignInWorkflow } from 'src/temporal/workflows/users/sign_in.workflow';
 import { getTemporalClient } from 'src/temporal/client';
-import { accountVerificationWorkflow } from 'src/temporal/workflows/users/account_verification.workflow';
 import { Logger } from '@nestjs/common';
+import { UserService } from './users.service';
 
 @Controller('users')
 export class UserController {
+  constructor(private readonly userService: UserService) {}
   private client = getTemporalClient();
   private readonly logger = new Logger(UserController.name, {
     timestamp: true,
@@ -33,21 +30,7 @@ export class UserController {
     @Body() user: SignUpDTO,
   ): Promise<{ success: string; message: string; workflowId: string }> {
     try {
-      const workflowId = `${user.email}_${Date.now()}`;
-      this.logger.log('Workflow Id: ', workflowId);
-
-      const handle = await this.client.workflow.start(userSignUpWorkflow, {
-        taskQueue: ENV.task_queue_name,
-        workflowId: workflowId,
-        args: [user],
-      });
-
-      return {
-        success: 'OK',
-        message:
-          'User created successfully! Check your email to verify your account',
-        workflowId: handle.workflowId,
-      };
+      return await this.userService.signUp(user);
     } catch (error) {
       this.logger.log('Failed to sign in: ', error);
       throw new HttpException(
@@ -68,22 +51,7 @@ export class UserController {
     @Body() verificationData: UserVerificationDTO,
   ): Promise<{ success: string; message: string; workflowId: string }> {
     try {
-      const workflowId = `${verificationData.code}_${Date.now()}`;
-      const handle = await this.client.workflow.start(
-        accountVerificationWorkflow,
-        {
-          taskQueue: ENV.task_queue_name,
-          workflowId: workflowId,
-          args: [verificationData],
-        },
-      );
-
-      return {
-        success: 'OK',
-        message:
-          'Verification code submitted. Your account will be verified shortly.',
-        workflowId: handle.workflowId,
-      };
+      return await this.userService.verifyEmail(verificationData);
     } catch (error) {
       throw new HttpException(
         {
@@ -101,15 +69,7 @@ export class UserController {
   @Get('sign-in')
   async signIn(@Body() userSignInDetails: SignInDTO) {
     try {
-      const signInResult = await getTemporalClient().workflow.start(
-        userSignInWorkflow,
-        {
-          taskQueue: ENV.task_queue_name,
-          workflowId: userSignInDetails.id,
-          args: [userSignInDetails],
-        },
-      );
-      return signInResult;
+      return await this.userService.signIn(userSignInDetails);
     } catch (error) {
       throw new HttpException(
         {
@@ -127,17 +87,7 @@ export class UserController {
   @Delete(':id')
   async delete(@Body() userId: userIdDTO) {
     try {
-      // TODO: Account deletion if not reactivated (30 days)
-
-      const accountDeletionResult = await getTemporalClient().workflow.start(
-        userAccountDeletionWorkflow,
-        {
-          taskQueue: ENV.task_queue_name,
-          workflowId: userId.id,
-          args: [userId],
-        },
-      );
-      return accountDeletionResult;
+      return await this.userService.deleteAccount(userId);
     } catch (error) {
       throw new HttpException(
         {
@@ -152,11 +102,13 @@ export class UserController {
     }
   }
 
-  // TODO: Account reactivation
+  // Account reactivation
   // @Patch(':id/reactivate')
   // async reactivate() {}
 
-  // TODO: Password reset endpoint
+  // Password reset endpoint
   // @Patch(':id')
   // async patch() {}
+
+  // delayed account deletion
 }
